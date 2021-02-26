@@ -33,13 +33,9 @@ export const reducer = (state, action) => {
   }
 };
 
-export const refs = {
-  Registration: React.createRef(),
-  Listening: React.createRef(),
-  Conversation: React.createRef()
-};
+export const getSoftKeyProps = state => {
+  const status = state.status;
 
-export const getSoftKeyProps = status => {
   const map = {
     Registration: { left: null, center: "JOIN", right: "Clear" },
     Listening: { left: "Leave", center: "CALL", right: "Clear" },
@@ -48,14 +44,7 @@ export const getSoftKeyProps = status => {
   return map[status];
 };
 
-export const getInfo = status => {
-  const map = {
-    Registration: "Please, input your code.",
-    Listening: "Wait for conversation or connect to your contact.",
-    Conversation: "Talk with contact."
-  };
-  return map[status];
-};
+export const getHeaderTitle = state => state.status;
 
 export const getAudio = () => {
   const audio = new Audio();
