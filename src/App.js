@@ -1,12 +1,13 @@
 import { useState, useReducer, useEffect } from "react";
 import { Header, Softkeys } from "./components";
+import Content from "./containers/content"
 import * as u from "./utils";
 
 const App = () => {
   const [audio] = useState(u.getAudio());
 
   const[state, dispatch] = useReducer(u.reducer, {
-    status: "Registration", 
+    status: u.Statuses.RGS,
     me: "",
     contact: "",
     message: ""
@@ -14,8 +15,9 @@ const App = () => {
 
   return (
     <>
-      <Header title={u.getHeaderTitle(state)} />
-      <Softkeys {...u.getSoftKeyProps(state)} />
+      <Header title={u.getHeaderTitle(state.status)} />
+      <Content state={state} />
+      <Softkeys {...u.getSoftKeyProps(state.status)} />
     </>
   );
 }
