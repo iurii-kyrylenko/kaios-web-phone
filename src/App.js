@@ -22,6 +22,10 @@ const App = () => {
     onLeave() {
       console.log("=== onLeave ===");
       dispatch({ type: u.Actions.LEAVE });
+      // dispatch({ type: u.Actions.LISTEN });
+    },
+    onCall() {
+      console.log("=== onCall ===");
     }
   }
 

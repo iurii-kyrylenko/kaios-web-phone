@@ -11,7 +11,8 @@ export const Statuses = Object.freeze({
 
 export const Actions = Object.freeze({
   JOIN: Symbol("join"),
-  LEAVE: Symbol("leave")
+  LEAVE: Symbol("leave"),
+  LISTEN: Symbol("listen")
 });
 
 const statusMap = {
@@ -74,6 +75,11 @@ export const reducer = (state, action) => {
       return {
         ...state,
         status: Statuses.RGS
+      };
+    case Actions.LISTEN:
+      return {
+        ...state,
+        status: Statuses.LST
       };
     default:
       return;

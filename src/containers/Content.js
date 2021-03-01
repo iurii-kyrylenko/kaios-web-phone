@@ -1,5 +1,6 @@
 import Reg from "../containers/Reg/Reg";
 import RegWait from "../containers/RegWait/RegWait";
+import Listen from "../containers/Listen/Listen";
 import { Statuses, getInfo } from "../utils";
 
 const Content = props => {
@@ -20,6 +21,15 @@ const Content = props => {
       return (
         <RegWait
           message={info}
+          onLeave={handlers.onLeave}
+        />
+      );
+    case Statuses.LST:
+      return (
+        <Listen
+          message={state.me}
+          info={info}
+          onCall={handlers.onCall}
           onLeave={handlers.onLeave}
         />
       );
