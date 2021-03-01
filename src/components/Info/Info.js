@@ -10,4 +10,4 @@ const Info = ({ text, isMessage }) => {
   );
 };
 
-export { Info };
+export default Info;

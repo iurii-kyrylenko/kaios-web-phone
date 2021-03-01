@@ -1,14 +1,17 @@
-import React from "react";
-
 export const Statuses = Object.freeze({
   RGS: Symbol("rgs"),
   RGS_W: Symbol("rgsw"),
   LST: Symbol("lst"),
-  CLL: Symbol("cll"),
-  CLL_W: Symbol("cllw"),
+  CALL: Symbol("call"),
+  CALL_W: Symbol("callw"),
   ANS: Symbol("ans"),
   ANS_W: Symbol("answ"),
   CNV: Symbol("cnv")
+});
+
+export const Actions = Object.freeze({
+  JOIN: Symbol("join"),
+  LEAVE: Symbol("leave")
 });
 
 const statusMap = {
@@ -27,12 +30,12 @@ const statusMap = {
     keys: { left: "Leave", center: "CALL" },
     info: "Wait for call or call to your contact."
   },
-  [Statuses.CLL]: {
+  [Statuses.CALL]: {
     name: "CALLING",
     keys: { left: "Leave", center: "CALL", right: "Clear" },
     info: "Please, input contact code."
   },
-  [Statuses.CLL_W]: {
+  [Statuses.CALL_W]: {
     name: "CALLING",
     keys: { center: "LEAVE" },
     info: "Wait, please."
@@ -56,9 +59,22 @@ const statusMap = {
 
 export const getSoftKeyProps = status => statusMap[status].keys;
 export const getHeaderTitle = status => statusMap[status].name;
+export const getInfo = status => statusMap[status].info;
 
 export const reducer = (state, action) => {
   switch (action.type) {
+    case Actions.JOIN:
+      return {
+        ...state,
+        me: action.data,
+        status: Statuses.RGS_W,
+        message: ""
+      };
+    case Actions.LEAVE:
+      return {
+        ...state,
+        status: Statuses.RGS
+      };
     default:
       return;
   }

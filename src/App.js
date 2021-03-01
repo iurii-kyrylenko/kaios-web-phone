@@ -1,6 +1,7 @@
-import { useState, useReducer, useEffect } from "react";
-import { Header, Softkeys } from "./components";
-import Content from "./containers/content"
+import { useState, useReducer } from "react";
+import Header from "./components/Header/Header";
+import Softkeys from "./components/Softkeys/Softkeys";
+import Content from "./containers/Content"
 import * as u from "./utils";
 
 const App = () => {
@@ -13,10 +14,21 @@ const App = () => {
     message: ""
   });
 
+  const handlers = {
+    onJoin(code) {
+      console.log("=== onJoin ===", code);
+      dispatch({ type: u.Actions.JOIN, data: code });
+    },
+    onLeave() {
+      console.log("=== onLeave ===");
+      dispatch({ type: u.Actions.LEAVE });
+    }
+  }
+
   return (
     <>
       <Header title={u.getHeaderTitle(state.status)} />
-      <Content state={state} />
+      <Content state={state} handlers={handlers} />
       <Softkeys {...u.getSoftKeyProps(state.status)} />
     </>
   );

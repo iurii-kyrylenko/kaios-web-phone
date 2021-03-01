@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useState } from "react";
 import { keys } from "../../config";
 import css from "./InputForm.module.css";
 
-const InputForm = React.forwardRef((props, ref) => {
-  const { label, onSubmit, onSoftLeft, isActive, code } = props;
+const ref = React.createRef();
 
-  const [value, setValue] = useState("");
+const InputForm = props => {
+  const { label, code, onSubmit, onSoftLeft } = props;
+
+  const [value, setValue] = useState(code);
+
+  useEffect(() => ref.current.focus(), []);
 
   const handleChange = event => {
     setValue(event.target.value);
@@ -32,27 +37,21 @@ const InputForm = React.forwardRef((props, ref) => {
     event.preventDefault();
   };
 
-  const input = (
-    <input
-      className={css.input}
-      ref={ref}
-      type="text"
-      value={value}
-      onChange={handleChange}
-      onKeyDown={handleKey}
-    />
-  );
-
-  const id = (<span className={css.code}>{code}</span>);
-
   return (
     <form className={css.inputForm} onSubmit={handleSubmit}>
       <label>
         <span className={css.label}>{label}{":"}</span>
-        {isActive ? input : id}
+        <input
+          ref={ref}
+          className={css.input}
+          type="text"
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKey}
+        />
       </label>
     </form>
   );
-});
+};
 
-export { InputForm };
+export default InputForm;

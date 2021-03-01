@@ -10,4 +10,4 @@ const Softkeys = ({ left, center, right }) => {
   );
 };
 
-export { Softkeys };
+export default Softkeys;

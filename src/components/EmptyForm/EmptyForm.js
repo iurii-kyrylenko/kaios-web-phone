@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-const EmptyForm = React.forwardRef(({ onSubmit }, ref) => {
+const ref = React.createRef();
+
+const EmptyForm = ({ onSubmit }) => {
+  useEffect(() => ref.current.focus(), []);
+
   const handleSubmit = event => {
     onSubmit();
     event.preventDefault();
@@ -11,6 +15,6 @@ const EmptyForm = React.forwardRef(({ onSubmit }, ref) => {
       <input ref={ref} type="text" style={{ opacity: 0 }}/>
     </form>
   );
-});
+};
 
-export { EmptyForm };
+export default EmptyForm;
