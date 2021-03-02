@@ -17,15 +17,24 @@ const App = () => {
   const handlers = {
     onJoin(code) {
       console.log("=== onJoin ===", code);
-      dispatch({ type: u.Actions.JOIN, data: code });
+      // dispatch({ type: u.Actions.JOIN, data: code });
     },
     onLeave() {
       console.log("=== onLeave ===");
-      dispatch({ type: u.Actions.LEAVE });
-      // dispatch({ type: u.Actions.LISTEN });
+      // dispatch({ type: u.Actions.LEAVE });
     },
     onCall() {
       console.log("=== onCall ===");
+      dispatch({ type: u.Actions.CALL });
+    },
+    onDoCall(code) {
+      console.log("=== onDoCall ===", code);
+    },
+    onAnswer(code) {
+      console.log("=== onAnswer ===");
+    },
+    onDecline(code) {
+      console.log("=== onDecline ===");
     }
   }
 

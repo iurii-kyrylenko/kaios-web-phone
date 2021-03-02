@@ -12,7 +12,12 @@ export const Statuses = Object.freeze({
 export const Actions = Object.freeze({
   JOIN: Symbol("join"),
   LEAVE: Symbol("leave"),
-  LISTEN: Symbol("listen")
+  LISTEN: Symbol("listen"),
+  CALL: Symbol("call"),
+  DO_CALL: Symbol("docall"),
+  IN_CALL: Symbol("incall"),
+  ANSWER: Symbol("answer"),
+  CONV: Symbol("conv")
 });
 
 const statusMap = {
@@ -44,7 +49,7 @@ const statusMap = {
   [Statuses.ANS]: {
     name: "ANSWERING",
     keys: { left: "Decline", center: "ANSWER" },
-    info(id) { return `Call from "${id}"`; }
+    info: "Answer or decline the call."
   },
   [Statuses.ANS_W]: {
     name: "ANSWERING",
@@ -58,6 +63,12 @@ const statusMap = {
   }
 }
 
+const isContactValid = (contact, me) => {
+    // Cannot call to myself & The same validation as in peerjs
+    return (contact !== me) &&
+    /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/.test(contact);
+}
+
 export const getSoftKeyProps = status => statusMap[status].keys;
 export const getHeaderTitle = status => statusMap[status].name;
 export const getInfo = status => statusMap[status].info;
@@ -68,8 +79,8 @@ export const reducer = (state, action) => {
       return {
         ...state,
         me: action.data,
-        status: Statuses.RGS_W,
-        message: ""
+        message: "",
+        status: Statuses.RGS_W
       };
     case Actions.LEAVE:
       return {
@@ -81,6 +92,38 @@ export const reducer = (state, action) => {
         ...state,
         status: Statuses.LST
       };
+    case Actions.CALL:
+      return {
+        ...state,
+        status: Statuses.CALL
+      };
+    case Actions.DO_CALL:
+      const contact = action.data;
+      return isContactValid(contact, state.me) ? {
+        ...state,
+        contact,
+        message: "",
+        status: Statuses.CALL_W
+      } : {
+        ...state,
+        message: "Invalid contact."
+      };
+    case Actions.IN_CALL:
+      return {
+        ...state,
+        contact: action.data,
+        status: Statuses.ANS
+      }
+    case Actions.ANSWER:
+      return {
+        ...state,
+        status: Statuses.ANS_W
+      }
+    case Actions.CONV:
+      return {
+        ...state,
+        status: Statuses.CNV
+      }
     default:
       return;
   }
