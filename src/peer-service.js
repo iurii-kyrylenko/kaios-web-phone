@@ -1,22 +1,20 @@
 import Peer from "peerjs";
 import { peerConfig } from "./config";
 
-const WAIT_FOR_ANSWER_MS = 10000;
-let waitTimer = null;
-
 let peer = null;
 let localStream = null;
-let isBusy = false;
+let mediaConnection = null;
+
+function getLocalStream() {
+  return navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+    .then(stream => localStream = stream)
+}
 
 export function createPeer(code, cb) {
   peer = new Peer(code, peerConfig);
 
   peer.on("open", id => {
-    navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-      .then(stream => localStream = stream)
-      .then(() => isBusy = false)
-      .then(() => cb.open(id))
-      .catch(err => cb(err));
+    cb.open(id);
   });
 
   peer.on("close", () => {
@@ -25,24 +23,24 @@ export function createPeer(code, cb) {
   });
 
   peer.on("error", err => {
-    clearTimeout(waitTimer);
     cb.error(err);
   });
 
-  peer.on("call", mediaConnection => {
-    // Prevent answer in case we have already got incoming stream
-    if (isBusy) {
-      return;
-    }
-
-    mediaConnection.answer(localStream);
-
-    mediaConnection.on("stream", stream => {
-      isBusy = true;
-      const rmCode = mediaConnection.peer;
-      cb.stream(stream, rmCode);
-    });
+  peer.on("call", connection => {
+    mediaConnection = connection;
+    cb.call(mediaConnection.peer);
   });
+}
+
+export function answerPeer(cb) {
+  getLocalStream()
+    .then(stream => {
+      mediaConnection.answer(stream);
+
+      mediaConnection.on("stream", stream => {
+        cb.stream(stream);
+      });
+    });
 }
 
 export function destroyPeer() {
@@ -50,17 +48,12 @@ export function destroyPeer() {
 }
 
 export function callPear(rmCode, cb) {
-  const mediaConnection = peer.call(rmCode, localStream);
+  getLocalStream()
+    .then(stream => {
+      const mediaConnection = peer.call(rmCode, localStream);
 
-  // Wait for remote stream
-  waitTimer = setTimeout(
-    () => !mediaConnection.open && cb.timeout(),
-    WAIT_FOR_ANSWER_MS
-  );
-
-  mediaConnection.on("stream", stream => {
-    clearTimeout(waitTimer);
-    isBusy = true;
-    cb.stream(stream);
-  });
+      mediaConnection.on("stream", stream => {
+        cb.stream(stream);
+      });
+    });
 }

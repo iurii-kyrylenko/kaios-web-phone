@@ -17,7 +17,8 @@ export const Actions = Object.freeze({
   DO_CALL: Symbol("docall"),
   IN_CALL: Symbol("incall"),
   ANSWER: Symbol("answer"),
-  CONV: Symbol("conv")
+  CONV: Symbol("conv"),
+  ERR: Symbol("err")
 });
 
 const statusMap = {
@@ -63,7 +64,7 @@ const statusMap = {
   }
 }
 
-const isContactValid = (contact, me) => {
+export const isContactValid = (contact, me) => {
     // Cannot call to myself & The same validation as in peerjs
     return (contact !== me) &&
     /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/.test(contact);
@@ -85,6 +86,7 @@ export const reducer = (state, action) => {
     case Actions.LEAVE:
       return {
         ...state,
+        message: "",
         status: Statuses.RGS
       };
     case Actions.LISTEN:
@@ -99,31 +101,36 @@ export const reducer = (state, action) => {
       };
     case Actions.DO_CALL:
       const contact = action.data;
-      return isContactValid(contact, state.me) ? {
+      return {
         ...state,
         contact,
         message: "",
         status: Statuses.CALL_W
-      } : {
-        ...state,
-        message: "Invalid contact."
       };
     case Actions.IN_CALL:
       return {
         ...state,
         contact: action.data,
         status: Statuses.ANS
-      }
+      };
     case Actions.ANSWER:
       return {
         ...state,
         status: Statuses.ANS_W
-      }
+      };
     case Actions.CONV:
       return {
         ...state,
         status: Statuses.CNV
-      }
+      };
+    case Actions.ERR:
+      return {
+        ...state,
+        message: action.data,
+        status: ([Statuses.CALL, Statuses.CALL_W].includes(state.status))
+          ? Statuses.CALL
+          : Statuses.RGS
+      };
     default:
       return;
   }
